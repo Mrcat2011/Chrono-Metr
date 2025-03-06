@@ -13,7 +13,7 @@ public:
 
 private:
     std::string TIME;
-    bool IsStart;
+    bool IsStart, IsUpdate = true;
     time_t StartTime;
 };
 

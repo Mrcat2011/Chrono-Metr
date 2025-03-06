@@ -11,7 +11,7 @@ int main(int argc, char const *argv[])
     /* code */
     InitWindow(screenWidth, screenHeight, "Clock");
 
-    State state = Counter;
+    State state = MENU;
     
     time_t k;
     time(&k);
@@ -21,7 +21,22 @@ int main(int argc, char const *argv[])
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        if (state == Counter) {
+        if (state == MENU) {
+            //MENU CODE
+            DrawRectangle(0, 0, 400, 100, WHITE);
+            DrawRectangleLines(0, 0, 400, 100, BLACK);
+
+            DrawText("Counter", 50, 50, 50, BLACK);
+
+            Vector2 pos = GetMousePosition();
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                if (pos.x >= 0 && pos.x <= 400 && pos.y >= 0 && pos.y <= 100) {
+                    state = Counter;
+                }
+            }
+
+
+        } else if (state == Counter) {
             time(&k);
             clock.Update();
             clock.Draw();

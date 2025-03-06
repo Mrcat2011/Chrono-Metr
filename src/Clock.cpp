@@ -1,4 +1,5 @@
 #include "../inc/Clock.hpp"
+#include "../inc/Button.hpp"
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -10,31 +11,62 @@ Clock::Clock(const char* _Time) {
 }
 
 void Clock::Draw() {
-    DrawText(TIME.c_str(), 80, GetScreenHeight() / 2, 60, BLACK);
+    DrawText(TIME.c_str(), 80, GetScreenHeight() / 2 - 100, 60, BLACK);
 
-    DrawRectangle(80, 470, 200, 50, BLACK);
-    if (!IsStart) {
-        DrawRectangle(80, 470, 200, 50, GREEN);
-        DrawText("START", 140, 485, 30, WHITE);
+
+    static Button btn("assets/back.png", {100, 100}, 0.1);
+
+    btn.Draw();
+
+    const char* text_for_break_continue;
+
+    if (IsUpdate) {
+        text_for_break_continue = "BREAK";
     } else {
-        DrawRectangle(80, 470, 200, 50, RED);
-        DrawText("BREAK", 140, 485, 30, WHITE);
+        text_for_break_continue = "CONT";
+    }
+
+    if (!IsStart) {
+        DrawRectangle(80, 370, 200, 50, GREEN);
+        DrawText("START", 140, 385, 30, WHITE);
+    } else {
+        DrawRectangle(80, 470, 100, 50, RED);
+        DrawRectangle(190, 470, 100, 50, BLUE);
+        DrawText(text_for_break_continue, 100, 485, 20, WHITE);
+        DrawText("FINISH", 210, 485, 20, WHITE);
     }
 }
 
 void Clock::Update() {
     Vector2 pos = GetMousePosition();
 
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && pos.x >= 80 && pos.x <= 280 && pos.y >= 470 && pos.y <= 520) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && pos.x >= 80 && pos.x <= 280 && pos.y >= 370 && pos.y <= 420) {
         if (!IsStart) {
             IsStart = true;
             time(&StartTime); 
-        } else {
+        } 
+    }
+
+    if (IsStart) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && pos.x >= 190 && pos.x <= 290 && pos.y >= 470 && pos.y <= 520) {
             IsStart = false;
         }
     }
 
     if (IsStart) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && pos.x >= 80 && pos.x <= 180 && pos.y >= 470 && pos.y <= 520) {
+            if (IsUpdate) {
+                IsUpdate = false;
+            } else {
+                IsUpdate = true;
+            }
+        }
+    }
+
+    if (IsUpdate == false && IsStart) {
+    }
+
+    if (IsStart && IsUpdate) {
         time_t currentTime;
         time(&currentTime);
         int elapsed = static_cast<int>(difftime(currentTime, StartTime));
@@ -48,7 +80,7 @@ void Clock::Update() {
             << std::setw(2) << std::setfill('0') << minutes << ":"
             << std::setw(2) << std::setfill('0') << seconds;
         TIME = oss.str();
-    } else {
+    } else if (IsStart == false) {
         TIME = "00:00:00"; 
     }
 }

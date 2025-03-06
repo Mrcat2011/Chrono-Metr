@@ -4,6 +4,7 @@
 //Global Variables
 
 enum State {
+    MENU,
     Counter,
     ChronoMetr
 };
